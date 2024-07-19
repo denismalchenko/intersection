@@ -15,11 +15,14 @@ class Line3D {
   Vector3D getDirection() const { return direction_; }
   void setPoint(const Vector3D& point) { point_ = point; }
   void setDirection(const Vector3D& direction) { direction_ = direction; }
+  // check if line is parallel or equal.
   bool IsParallel(const Line3D& other, const double deviation = EPSILON) const {
     return direction_.IsCollinear(other.getDirection(), deviation);
   }
+  // check if point is on line
   bool IsPointOnLine(const Vector3D& point,
                      const double deviation = EPSILON) const;
+  // Find intersection point of two lines.
   std::pair<Vector3D, bool> Intersect(const Line3D& other,
                                       const double deviation = EPSILON) const;
 

@@ -1,9 +1,7 @@
 #include "line3d.h"
 
-#include <cmath>
-
 bool Line3D::IsPointOnLine(const Vector3D& point,
-                           const double deviation = EPSILON) const {
+                           const double deviation) const {
   if (direction_.IsZero(deviation)) {
     return (point - point_).IsZero(deviation);
   } else {
@@ -11,17 +9,21 @@ bool Line3D::IsPointOnLine(const Vector3D& point,
   }
 }
 
-std::pair<Vector3D, bool> Line3D::Intersect(
-    const Line3D& other, const double deviation = EPSILON) const {
+std::pair<Vector3D, bool> Line3D::Intersect(const Line3D& other,
+                                            const double deviation) const {
   if (IsParallel(other, deviation)) {
+    // Параллельность может быть для нулевых направляющих векторов. Проверяем
+    // случаи
     if (direction_.IsZero(deviation)) {
       if (other.direction_.IsZero(deviation)) {
+        // Оба вектора нулевых, т.е. это просто 2 точки
         if ((point_ - other.point_).IsZero(deviation)) {
           return std::make_pair(point_, true);
         } else {
           return std::make_pair(Vector3D(NAN, NAN, NAN), false);
         }
       } else {
+        // Первый вектор нулевый, второй нет
         if ((point_ - other.point_).IsCollinear(other.direction_, deviation)) {
           return std::make_pair(point_, true);
         } else {
@@ -29,16 +31,20 @@ std::pair<Vector3D, bool> Line3D::Intersect(
         }
       }
     } else if (other.direction_.IsZero(deviation)) {
+      // Первый вектор нулевый, второй нет
       if ((point_ - other.point_).IsCollinear(direction_, deviation)) {
         return std::make_pair(other.point_, true);
       } else {
         return std::make_pair(Vector3D(NAN, NAN, NAN), false);
       }
     } else {
+      // Оба вектора ненулевые. Они или параллельны или совпадают
       return std::make_pair(Vector3D(INFINITY, INFINITY, INFINITY), false);
     }
   }
   Vector3D points_vector = other.getPoint() - point_;
+  // Это решение методом краммера соответсвующей системы уравнений в случае
+  // параметрического задания прямых.
   double t = (other.getDirection().getX() * points_vector.getY() -
               other.getDirection().getY() * points_vector.getX()) /
              (other.getDirection().getX() * direction_.getY() -

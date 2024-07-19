@@ -15,9 +15,12 @@ class Segment3D {
   Vector3D getEnd() const { return end; }
   void setStart(const Vector3D& start) { this->start = start; }
   void setEnd(const Vector3D& end) { this->end = end; }
+  // get segment direction vector
   Vector3D Direction() const { return end - start; }
+  // check if point is on segment
   bool IsPointOnSegment(const Vector3D& point,
                         const double deviation = EPSILON) const;
+  // Find point of intersection between two segments
   std::pair<Vector3D, bool> Intersect(const Segment3D& other,
                                       const double deviation = EPSILON) const;
 
@@ -28,8 +31,6 @@ class Segment3D {
 
 std::pair<Vector3D, bool> Intersect(const Segment3D& segment1,
                                     const Segment3D& segment2,
-                                    const double deviation = EPSILON) {
-  return segment1.Intersect(segment2, deviation);
-}
+                                    const double deviation = EPSILON);
 
 #endif  // SRC_SEGMENT3D_H_
